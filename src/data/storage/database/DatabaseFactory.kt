@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import picfinder.data.storage.table.PicSources
 import picfinder.server.*
 import picfinder.server.extensions.fromEnv
 import java.net.URI
@@ -14,6 +16,10 @@ object DatabaseFactory {
 
     fun init() {
         Database.connect(hikari())
+
+        transaction {
+            SchemaUtils.create(PicSources)
+        }
     }
 
     private fun hikari(): HikariDataSource {
