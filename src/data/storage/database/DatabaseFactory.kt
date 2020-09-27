@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import picfinder.data.storage.table.PictureSource
@@ -23,16 +24,7 @@ object DatabaseFactory {
 
         transaction {
             SchemaUtils.create(PictureSources)
-
-            PictureSources.insert {
-                it[name] = PictureSource.UNSPLASH
-                it[url] = "https://api.unsplash.com/"
-            }
-
-            PictureSources.insert {
-                it[name] = PictureSource.IMGUR
-                it[url] = "https://api.imgur.com/"
-            }
+            fitPicSources()
         }
     }
 
@@ -65,6 +57,19 @@ object DatabaseFactory {
             .append("user=$username&")
             .append("password=$password")
             .toString()
+    }
+
+    private fun fitPicSources() {
+        PictureSources.deleteAll()
+        PictureSources.insert {
+            it[name] = PictureSource.UNSPLASH
+            it[url] = "https://api.unsplash.com/"
+        }
+
+        PictureSources.insert {
+            it[name] = PictureSource.IMGUR
+            it[url] = "https://api.imgur.com/"
+        }
     }
 }
 
