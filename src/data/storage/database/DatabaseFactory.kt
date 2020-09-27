@@ -6,11 +6,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import picfinder.data.storage.table.PicSources
+import picfinder.data.storage.table.PictureSource
+import picfinder.data.storage.table.PictureSources
 import picfinder.server.*
 import picfinder.server.extensions.fromEnv
 import java.net.URI
+
+const val TRANSACTION_ISOLATION = "TRANSACTION_REPEATABLE_READ"
 
 object DatabaseFactory {
 
@@ -18,7 +22,17 @@ object DatabaseFactory {
         Database.connect(hikari())
 
         transaction {
-            SchemaUtils.create(PicSources)
+            SchemaUtils.create(PictureSources)
+
+            PictureSources.insert {
+                it[name] = PictureSource.UNSPLASH
+                it[url] = "https://api.unsplash.com/"
+            }
+
+            PictureSources.insert {
+                it[name] = PictureSource.IMGUR
+                it[url] = "https://api.imgur.com/"
+            }
         }
     }
 
