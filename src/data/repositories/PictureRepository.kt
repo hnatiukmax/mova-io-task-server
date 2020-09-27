@@ -11,14 +11,17 @@ import picfinder.data.storage.database.dbQuery
 import picfinder.data.storage.table.PictureSource
 import picfinder.data.storage.table.PictureSources
 import picfinder.data.storage.table.asPictureSourceInfo
+import picfinder.server.tryOrNull
 
 class PictureRepository(private val restClient: RestClient) {
 
-    suspend fun getPictureBySourceId(sourceId: Int, query: String): PictureInfo = withContext(Dispatchers.IO) {
-        when (getPictureSourceNameById(sourceId)) {
-            PictureSource.UNSPLASH -> getPictureByUnsplash(query)
-            PictureSource.IMGUR -> getPictureByImgur(query)
-        } ?: throw Exception("No result")
+    suspend fun getPictureBySourceId(sourceId: Int, query: String): PictureInfo? = withContext(Dispatchers.IO) {
+        tryOrNull {
+            when (getPictureSourceNameById(sourceId)) {
+                PictureSource.UNSPLASH -> getPictureByUnsplash(query)
+                PictureSource.IMGUR -> getPictureByImgur(query)
+            }
+        }
     }
 
     private suspend fun getPictureByUnsplash(query: String): PictureInfo {
