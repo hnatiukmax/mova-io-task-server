@@ -23,10 +23,13 @@ fun Route.picture(pictureRepository: PictureRepository) {
 
     get<Picture> {
         try {
-            val result = async {
-                pictureRepository.getPictureBySourceId(it.picSourceId, it.query)
+            val result = pictureRepository.getPictureBySourceId(it.picSourceId, it.query)
+
+            if (result != null) {
+                call.respond(HttpStatusCode.OK, result)
+            } else {
+                call.respond(HttpStatusCode.NotFound,  PICTURE_NOT_FOUND_ERROR.asErrorResponse)
             }
-            call.respond(HttpStatusCode.OK, result.await() ?: PICTURE_NOT_FOUND_ERROR.asErrorResponse)
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.InternalServerError, SERVER_ERROR.asErrorResponse)
         }
