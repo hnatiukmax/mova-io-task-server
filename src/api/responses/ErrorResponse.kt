@@ -6,3 +6,5 @@ data class ErrorResponse(
     @SerializedName("error")
     val message: String
 )
+
+val String.asErrorResponse get() = ErrorResponse(this)
