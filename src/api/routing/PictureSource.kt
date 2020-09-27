@@ -7,21 +7,21 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import picfinder.api.PUB
 import picfinder.api.SERVER_ERROR
-import picfinder.api.extensions.asErrorResponse
-import picfinder.data.repositories.PicSourceRepository
+import picfinder.api.responses.asErrorResponse
+import picfinder.data.repositories.PictureSourceRepository
 
-const val PIC_SOURCE_ENDPOINT = "$PUB/pic-source"
+const val PIC_SOURCE_ENDPOINT = "$PUB/picture-source"
 
 @KtorExperimentalLocationsAPI
 @Location(PIC_SOURCE_ENDPOINT)
-class PicSource
+class PictureSource
 
 @KtorExperimentalLocationsAPI
-fun Route.picSource(picSourceRepository: PicSourceRepository) {
+fun Route.pictureSource(pictureSourceRepository: PictureSourceRepository) {
 
-    get<PicSource> {
+    get<PictureSource> {
         try {
-            val picSources = picSourceRepository.getPicSources()
+            val picSources = pictureSourceRepository.getPictureSources()
             call.respond(HttpStatusCode.OK, picSources)
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.InternalServerError, SERVER_ERROR.asErrorResponse)
