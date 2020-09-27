@@ -24,7 +24,6 @@ object DatabaseFactory {
 
         transaction {
             SchemaUtils.create(PictureSources)
-            fitPicSources()
         }
     }
 
@@ -57,19 +56,6 @@ object DatabaseFactory {
             .append("user=$username&")
             .append("password=$password")
             .toString()
-    }
-
-    private fun fitPicSources() {
-        PictureSources.deleteAll()
-        PictureSources.insert {
-            it[name] = PictureSource.UNSPLASH
-            it[url] = "https://api.unsplash.com/"
-        }
-
-        PictureSources.insert {
-            it[name] = PictureSource.IMGUR
-            it[url] = "https://api.imgur.com/"
-        }
     }
 }
 
