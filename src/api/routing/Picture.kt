@@ -5,11 +5,11 @@ import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.async
 import picfinder.api.PICTURE_NOT_FOUND_ERROR
 import picfinder.api.PUB
 import picfinder.api.SERVER_ERROR
 import picfinder.api.responses.asErrorResponse
-import picfinder.data.network.entity.asPictureResponse
 import picfinder.data.repositories.PictureRepository
 
 const val PICTURE_ENDPOINT = "$PUB/picture"
@@ -23,9 +23,10 @@ fun Route.picture(pictureRepository: PictureRepository) {
 
     get<Picture> {
         try {
-            val pictureResponse = pictureRepository.getPictureBySourceId(it.picSourceId, it.query)?.asPictureResponse
-                ?: PICTURE_NOT_FOUND_ERROR.asErrorResponse
-            call.respond(HttpStatusCode.InternalServerError, pictureResponse)
+            val result = async {
+                pictureRepository.getPictureBySourceId(it.picSourceId, it.query)
+            }
+            call.respond(HttpStatusCode.OK, result.await() ?: PICTURE_NOT_FOUND_ERROR.asErrorResponse)
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.InternalServerError, SERVER_ERROR.asErrorResponse)
         }
